@@ -1,0 +1,184 @@
+# SaaS POS System - Setup Guide
+
+## Prerequisites
+- PHP 8.2 or higher
+- MySQL 8.0 or higher
+- Composer 2.x
+- Node.js 18+
+
+## Installation Steps
+
+### 1. Install Dependencies
+```bash
+composer install
+npm install
+```
+
+### 2. Environment Setup
+```bash
+cp .env.example .env
+php artisan key:generate --force
+```
+
+### 3. Configure Database
+Edit `.env` file with your MySQL credentials:
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=saas_pos
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+### 4. Create Database
+```sql
+CREATE DATABASE saas_pos CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+
+### 5. Run Migrations
+```bash
+php artisan migrate
+```
+
+### 6. Seed Database
+```bash
+php artisan db:seed
+```
+
+### 7. Create Storage Link
+```bash
+php artisan storage:link
+```
+
+### 8. Build Assets
+```bash
+npm run dev
+# OR for production:
+npm run build
+```
+
+### 9. Start Server
+```bash
+php artisan serve
+```
+
+Visit: http://localhost:8000
+
+## Default Credentials
+
+| Account | Email | Password |
+|---------|-------|----------|
+| Superadmin | admin@saaspos.com | password |
+
+## Testing the Application
+
+1. Register a new tenant at `/register`
+2. Login with tenant credentials
+3. Access POS at `/pos`
+4. Admin panel at `/admin`
+
+## Troubleshooting
+
+### Common Issues:
+- **"Class not found"**: Run `composer dump-autoload`
+- **Permission errors**: `chmod -R 775 storage bootstrap/cache`
+- **Asset not loading**: Run `npm run dev` and clear cache `php artisan cache:clear`
+
+## File Structure Overview
+
+```
+/workspaces/WEBSITE/
+├── app/
+│   ├── Http/
+│   │   ├── Controllers/     # API & Web controllers
+│   │   ├── Livewire/Pos/    # POS Livewire components
+│   │   └── Middleware/      # Auth & tenant middleware
+│   ├── Models/              # Eloquent models
+│   ├── Providers/            # Service providers
+│   └── Services/             # Business logic services
+├── config/                   # Laravel configurations
+├── database/
+│   ├── migrations/           # Database schema
+│   └── seeders/             # Test data
+├── resources/
+│   └── views/               # Blade templates
+├── routes/                   # Route definitions
+├── mobile/                   # Mobile app (Capacitor)
+│   ├── src/
+│   │   ├── screens/        # React mobile screens
+│   │   ├── components/     # React components
+│   │   ├── stores/         # State management
+│   │   └── services/       # API services
+│   ├── android/            # Android native project
+│   ├── ios/                # iOS native project
+│   └── README.md           # Mobile build guide
+└── README.md                # Full documentation
+```
+
+================================================================================
+# MOBILE APP BUILD (Android/iOS)
+================================================================================
+
+## IMPORTANT: Run Setup First!
+
+The `android/` and `ios/` folders are GENERATED. They don't exist yet!
+
+Run the setup script ONCE:
+```bash
+cd /workspaces/WEBSITE/mobile
+chmod +x setup.sh
+./setup.sh
+```
+
+This will create the android/ and ios/ folders.
+
+## Prerequisites
+
+### For Android:
+- Android SDK
+- Java JDK 11+
+
+### For iOS (Mac only):
+- Xcode 14+
+
+## Mobile Build Commands
+
+### First Time Setup:
+```bash
+cd /workspaces/WEBSITE/mobile
+chmod +x setup.sh
+./setup.sh
+```
+
+### After Code Changes:
+```bash
+cd /workspaces/WEBSITE/mobile
+npm run build
+npx cap sync
+```
+
+### Build APK:
+```bash
+chmod +x build-android.sh
+./build-android.sh
+```
+APK location: `android/app/build/outputs/apk/debug/app-debug.apk`
+
+### Open in Android Studio:
+```bash
+npx cap open android
+```
+
+### Open in Xcode (Mac only):
+```bash
+npx cap open ios
+```
+
+## Mobile Features
+- Touch-optimized POS interface
+- Offline data caching
+- Native camera for barcode scanning
+- Haptic feedback
+- Push notifications ready
+- iOS and Android support
